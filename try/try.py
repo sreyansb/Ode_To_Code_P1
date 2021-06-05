@@ -1,3 +1,4 @@
+"""
 import base64
 #from pydub import AudioSegment
 import os
@@ -34,3 +35,95 @@ data, samplerate = sf.read('written2.ogg')
 sf.write('new_file.wav', data, samplerate)
 
 '''
+"""
+'''
+
+from nltk import pos_tag
+from nltk import RegexpParser
+text ="I have cancer and high blood pressure".split()
+print("After Split:",text)
+tokens_tag = pos_tag(text)
+print("After Token:",tokens_tag)
+patterns= """mychunk:{<NN.?>*<VBD.?>*<JJ.?>*<CC>?}"""
+chunker = RegexpParser(patterns)
+print("After Regex:",chunker)
+output = chunker.parse(tokens_tag)
+print("After Chunking",output)
+'''
+'''
+import nltk
+text = "I have cancer and high BP"
+tokens = nltk.word_tokenize(text)
+print(tokens)
+tag = nltk.pos_tag(tokens)
+print(tag)
+grammar = "NP: {<DT>?<JJ>*<NN>}"
+cp  =nltk.RegexpParser(grammar)
+result = cp.parse(tag)
+print(result)
+#result.draw()
+'''
+'''
+import scispacy
+import spacy
+nlp = spacy.load("en_core_sci_sm")
+#text = """I have no disease""" - > no disease
+#text="I am well"->()
+text="I am sick"
+doc = nlp(text)
+print((doc.ents))
+'''
+
+'''
+import nltk
+nltk.download('punkt')
+'''
+import scispacy
+import spacy
+import json
+nlp = spacy.load("en_core_sci_sm")
+#text = """I have no disease""" - > no disease
+#text="I am well"->()
+
+optionstemp=["Diabetes","Thyroid","Cancer","None"]
+options={}
+for i in range(len(optionstemp)):
+    options[optionstemp[i].lower()]=optionstemp[i]
+def finder(text):
+    doc = nlp(text)
+    all_diseases=list(doc.ents)
+    for i in range(len(all_diseases)):
+        all_diseases[i]=str(all_diseases[i])
+    print(all_diseases)
+    ans={"answers":[]}
+    if len(all_diseases)==0 or (len(all_diseases)==1 and (all_diseases[0] in {"disease","fit","no disease","sick","not sick"})):
+        
+        if "none" in options:
+            ans["answers"]=[options["none"]]
+            print(json.dumps(ans))
+            return 1
+        else:
+            print(json.dumps(ans))
+            return 2
+    ansk=set()
+    for i in all_diseases:
+        k=i
+        if "disease" in k and k!="disease":
+            k=k.split("disease")[0]
+        if k in options:
+            ansk.add(options[k])
+        elif k!="disease":
+            ansk.add("others")
+    if "others" not in options:
+        ansk=ansk-{"others"}
+    elif "others" in ansk :
+        ansk=ansk-{"others"}
+        ansk.add(options["others"])
+    ans={"answers":list(ansk)}
+    print(json.dumps(ans))
+    return 3
+    #return Response(json.dumps(ans),status=200,mimetype="application/json")
+
+#print(finder("I have cancer and thyroid".lower()))
+#print(finder("I have no disease".lower()))
+print(finder("I have High Blood pressure".lower()))
