@@ -5,6 +5,7 @@ from flask_restful import Resource,Api
 import base64
 import numpy
 import soundfile as sf
+import speech_recognition as sr
 
 app=Flask(__name__)
 api=Api(app)
@@ -38,6 +39,9 @@ class q2(Resource):
         final_file.close()
         data, samplerate = sf.read('written.ogg')
         sf.write('new_file.wav', data, samplerate)
+        r=sr.Recognizer()
+        income = r.recognize_google("new_file.wav")
+        print(income)
         
 
 class q3(Resource):
