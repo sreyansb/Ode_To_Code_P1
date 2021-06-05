@@ -10,6 +10,7 @@ import speech_recognition as sr
 import scispacy
 import spacy
 from bisect import bisect_right
+import nltk
 nlp = spacy.load("en_core_sci_sm") # load it at start time so that speed is maintained
 
 app=Flask(__name__)
@@ -105,23 +106,27 @@ class q1(Resource):
                 text=text.replace("lac","lakh")
             if "lack" in text:
                 text=text.replace("lack","lakh")
+
             text=text.replace("lakh","")
-            s=0
-            if "half" in text:
-                s=0
-                index=0
-                while(index<len(text) and text.isdigit()):
-                    s=s*10+int(text[index])
-                    index+=1
-                s=s+0.5
-            elif "point" in text:
+
+            if "point" in text:
                 text=text.split("point")
-                s=float(text[0].strip()+"."+text[1].strip())
-            elif "." in text:
+                text=(text[0].strip()+"."+text[1].strip())
+            if "." in text:
                 text=text.split(".")
-                s=float(text[0].strip()+"."+text[1].strip())
-            else:
-                s=float(text)
+                text=(text[0].strip()+"."+text[1].strip())
+            
+            s=0
+            tokens = nltk.word_tokenize(text)
+            tag = nltk.pos_tag(tokens)
+            for i in tag:
+                if i[1]=="CD":
+                    s=float(i[0])
+                    break
+
+            if "half" in text:
+                s=s+0.5
+            
             pos=bisect_right(array,s)
             if pos!=n:
                 ans={"answers":[allowed[pos]]}

@@ -52,17 +52,18 @@ print("After Chunking",output)
 '''
 '''
 import nltk
-text = "I have cancer and high BP"
+text = "7.5 lakhs"
 tokens = nltk.word_tokenize(text)
-print(tokens)
+print(type(tokens),type(tokens[0]))
 tag = nltk.pos_tag(tokens)
-print(tag)
+print(type(tag),type(tag[0][0]),tag[0][1]=="CD")
 grammar = "NP: {<DT>?<JJ>*<NN>}"
 cp  =nltk.RegexpParser(grammar)
 result = cp.parse(tag)
 print(result)
 #result.draw()
 '''
+
 '''
 import scispacy
 import spacy
@@ -132,14 +133,17 @@ print(finder("I have High Blood pressure".lower()))
 '''
 from bisect import bisect_right
 import json
-array=[]
-allowed=[]
-n=0
+import nltk
+
 optionstemp=["<5lakh","5lakh-15lakh","15lakh-20lakh","20lakh>"]
 options={}
 for i in range(len(optionstemp)):
     options[optionstemp[i].lower()]=optionstemp[i]
-
+#text="My income is 3 lack"
+text="I earn 15 lakh per annum"
+array=[]
+allowed=[]
+n=0
 for i in options:
     allowed.append(options[i])
     options[i]=options[i].replace("lakh","")
@@ -151,24 +155,31 @@ for i in options:
         array.append(float(options[i][options[i].find("-")+1:]))
     n+=1
 
-text="3lakh"
+if "lac" in text:
+    text=text.replace("lac","lakh")
+if "lack" in text:
+    text=text.replace("lack","lakh")
+
 text=text.replace("lakh","")
-s=0
-if "half" in text:
-    s=0
-    index=0
-    while(index<len(text) and text.isdigit()):
-        s=s*10+int(text[index])
-        index+=1
-    s=s+0.5
-elif "point" in text:
+
+if "point" in text:
     text=text.split("point")
-    s=float(text[0].strip()+"."+text[1].strip())
-elif "." in text:
+    text=(text[0].strip()+"."+text[1].strip())
+if "." in text:
     text=text.split(".")
-    s=float(text[0].strip()+"."+text[1].strip())
-else:
-    s=float(text)
+    text=(text[0].strip()+"."+text[1].strip())
+
+s=0
+tokens = nltk.word_tokenize(text)
+tag = nltk.pos_tag(tokens)
+for i in tag:
+    if i[1]=="CD":
+        s=float(i[0])
+        break
+
+if "half" in text:
+    s=s+0.5
+
 pos=bisect_right(array,s)
 if pos!=n:
     ans={"answers":[allowed[pos]]}
@@ -217,6 +228,8 @@ import ffmpeg
 stream=ffmpeg.input("no_health.ogg")
 ffmpeg.output(stream,"abc.wav")
 '''
+'''
 from pydub import AudioSegment
 sound = AudioSegment.from_ogg("no_health.ogg")
 sound.export("ainvayi.wav", format="wav")
+'''
