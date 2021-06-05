@@ -129,6 +129,7 @@ def finder(text):
 #print(finder("I have no disease".lower()))
 print(finder("I have High Blood pressure".lower()))
 '''
+'''
 from bisect import bisect_right
 import json
 array=[]
@@ -174,3 +175,39 @@ if pos!=n:
 else:
     ans={"answers":[allowed[-1]]}
 print(text,array,s,json.dumps(ans))
+'''
+
+import json
+#text="23rd december 1998".lower()
+#text="22 10 1998".lower()
+text="1998 10 22".lower()
+
+text=text.split()
+s=""
+index=0
+
+while(index<len(text[0]) and text[0][index].isdigit()):
+    s=s+text[0][index]
+    index+=1
+
+date,year,month=0,0,0
+if len(s)<4:
+    date=s
+    if len(date)<2:
+        date="0"+date
+
+    allowed={"january":"01","jan":"01","february":"02","feb":"02","march":"03","april":"04",\
+        "may":"05","june":"06","july":"07","august":"08","aug":"08","september":"09","sept":"09",\
+            "oct":"10","october":"10","november":"11","december":"12","dec":"12"}
+    
+    if text[1] in allowed:
+        month=allowed[text[1]]
+    else:
+        month=text[1]
+    year=text[2]
+else:
+    year=text[0]
+    month=text[1]
+    date=text[2]
+ans={"answer":[date+"/"+month+"/"+year]}
+print(json.dumps(ans))

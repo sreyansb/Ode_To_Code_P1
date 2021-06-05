@@ -112,8 +112,35 @@ class q1(Resource):
             return Response(json.dumps(ans),status=200,mimetype="application/json")
             
         if question_key=="q3":
-            pass
+            text=text.split()
+            s=""
+            index=0
+            while(index<len(text[0]) and text[0][index].isdigit()):
+                s=s+text[0][index]
+                index+=1
+            date,year,month=0,0,0
+            if len(s)<4:
+                date=s
 
+                if len(s)<2:
+                    date="0"+date
+
+                allowed={"january":"01","jan":"01","february":"02","feb":"02","march":"03","april":"04",\
+                    "may":"05","june":"06","july":"07","august":"08","aug":"08","september":"09","sept":"09",\
+                        "oct":"10","october":"10","november":"11","december":"12","dec":"12"}
+                
+                if text[1] in allowed:
+                    month=allowed[text[1]]
+                else:
+                    month=text[1]
+                year=text[2]
+            else:
+                year=text[0]
+                month=text[1]
+                date=text[2]
+            ans={"answer":[date+"/"+month+"/"+year]}
+            return Response(json.dumps(ans),status=200,mimetype="application/json")
+        
         os.system("del finale.wav")
 
 api.add_resource(q1,"/v1/api")
