@@ -8,6 +8,7 @@ import os
 import speech_recognition as sr
 import scispacy
 import spacy
+from bisect import bisect_right
 nlp = spacy.load("en_core_sci_sm") # load it at start time so that speed is maintained
 
 app=Flask(__name__)
@@ -68,8 +69,48 @@ class q1(Resource):
             return Response(json.dumps(ans),status=200,mimetype="application/json")
             
         if question_key=="q2":
-            pass
-
+            array=[]
+            allowed=[]
+            n=0
+            for i in options:
+                allowed.append(options[i])
+                options[i]=options[i].replace("lakh","")
+                if "<" in options[i]:
+                    array.append(float(options[i][1:]))
+                elif ">" in options[i]:
+                    array.append(float(options[i][:-1]))
+                else:
+                    array.append(float(options[i][options[i].find("-")+1:]))
+                n+=1
+            
+            if "lac" in text:
+                text=text.replace("lac","lakh")
+            if "lack" in text:
+                text=text.replace("lack","lakh")
+            text=text.replace("lakh","")
+            s=0
+            if "half" in text:
+                s=0
+                index=0
+                while(index<len(text) and text.isdigit()):
+                    s=s*10+int(text[index])
+                    index+=1
+                s=s+0.5
+            elif "point" in text:
+                text=text.split("point")
+                s=float(text[0].strip()+"."+text[1].strip())
+            elif "." in text:
+                text=text.split(".")
+                s=float(text[0].strip()+"."+text[1].strip())
+            else:
+                s=float(text)
+            pos=bisect_right(array,s)
+            if pos!=n:
+                ans={"answers":[allowed[pos]]}
+            else:
+                ans={"answers":[allowed[-1]]}
+            return Response(json.dumps(ans),status=200,mimetype="application/json")
+            
         if question_key=="q3":
             pass
 

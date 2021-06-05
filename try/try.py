@@ -78,6 +78,7 @@ print((doc.ents))
 import nltk
 nltk.download('punkt')
 '''
+'''
 import scispacy
 import spacy
 import json
@@ -127,3 +128,49 @@ def finder(text):
 #print(finder("I have cancer and thyroid".lower()))
 #print(finder("I have no disease".lower()))
 print(finder("I have High Blood pressure".lower()))
+'''
+from bisect import bisect_right
+import json
+array=[]
+allowed=[]
+n=0
+optionstemp=["<5lakh","5lakh-15lakh","15lakh-20lakh","20lakh>"]
+options={}
+for i in range(len(optionstemp)):
+    options[optionstemp[i].lower()]=optionstemp[i]
+
+for i in options:
+    allowed.append(options[i])
+    options[i]=options[i].replace("lakh","")
+    if "<" in options[i]:
+        array.append(float(options[i][1:]))
+    elif ">" in options[i]:
+        array.append(float(options[i][:-1]))
+    else:
+        array.append(float(options[i][options[i].find("-")+1:]))
+    n+=1
+
+text="3lakh"
+text=text.replace("lakh","")
+s=0
+if "half" in text:
+    s=0
+    index=0
+    while(index<len(text) and text.isdigit()):
+        s=s*10+int(text[index])
+        index+=1
+    s=s+0.5
+elif "point" in text:
+    text=text.split("point")
+    s=float(text[0].strip()+"."+text[1].strip())
+elif "." in text:
+    text=text.split(".")
+    s=float(text[0].strip()+"."+text[1].strip())
+else:
+    s=float(text)
+pos=bisect_right(array,s)
+if pos!=n:
+    ans={"answers":[allowed[pos]]}
+else:
+    ans={"answers":[allowed[-1]]}
+print(text,array,s,json.dumps(ans))
