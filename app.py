@@ -58,11 +58,12 @@ class q1(Resource):
                     ansk.add(options[k])
                 elif k!="disease":
                     ansk.add("others")
-            if "others" not in options:
-                ansk=ansk-{"others"}
-            elif "others" in ansk:
-                ansk=ansk-{"others"}
-                ansk.add(options["others"])
+            if "others" in ansk:
+                if "others" not in options:
+                    ansk=ansk-{"others"}
+                elif "others" in ansk:
+                    ansk=ansk-{"others"}
+                    ansk.add(options["others"])
             ans={"answers":list(ansk)}
             return Response(json.dumps(ans),status=200,mimetype="application/json")
             

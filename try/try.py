@@ -94,7 +94,7 @@ def finder(text):
     all_diseases=list(doc.ents)
     for i in range(len(all_diseases)):
         all_diseases[i]=str(all_diseases[i])
-    print(all_diseases)
+    #print(all_diseases)
     ans={"answers":[]}
     if len(all_diseases)==0 or (len(all_diseases)==1 and (all_diseases[0] in {"disease","fit","no disease","sick","not sick"})):
         
