@@ -48,17 +48,26 @@ class q1(Resource):
 
         if question_key=="q1":
             doc = nlp(text)
+            #print(text)
             all_diseases=list(doc.ents)
             for i in range(len(all_diseases)):
                 all_diseases[i]=str(all_diseases[i])
+            print(all_diseases)
             ans={"answers":[]}
             if len(all_diseases)==0 or (len(all_diseases)==1 and (all_diseases[0] in {"disease","fit","no disease","sick","not sick"})):
                 
                 if "none" in options:
-                    ans["answers"]=options["none"]
+                    ans["answers"]=[options["none"]]
                     return Response(json.dumps(ans),status=200,mimetype="application/json")
                 else:
                     return Response(json.dumps(ans),status=200,mimetype="application/json")
+            if "don't" in text or "do not" in text:
+                if "none" in options:
+                    ans["answers"]=[options["none"]]
+                    return Response(json.dumps(ans),status=200,mimetype="application/json")
+                else:
+                    return Response(json.dumps(ans),status=200,mimetype="application/json")
+
             ansk=set()
             for i in all_diseases:
                 k=i
