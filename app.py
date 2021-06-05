@@ -4,7 +4,7 @@ import json
 from flask_restful import Resource,Api
 import base64
 import numpy
-import soundfile as sf
+import os
 import speech_recognition as sr
 
 app=Flask(__name__)
@@ -22,8 +22,14 @@ class q1(Resource):
         final_file=open("written.ogg","wb")
         final_file.write(base64.b64decode(audio))
         final_file.close()
-        data, samplerate = sf.read('written.ogg')
-        sf.write('new_file.wav', data, samplerate)
+        os.system("ffmpeg -i written2.ogg finale.wav")
+        r=sr.Recognizer()
+        spoken=sr.AudioFile('finale.wav')
+        with spoken as source:
+            audio=r.record(source)
+        text=r.recognize_google(audio)
+        print(text)
+        os.system("del finale.wav")
 
 class q2(Resource):
     def post(self):
@@ -37,11 +43,14 @@ class q2(Resource):
         final_file=open("written.ogg","wb")
         final_file.write(base64.b64decode(audio))
         final_file.close()
-        data, samplerate = sf.read('written.ogg')
-        sf.write('new_file.wav', data, samplerate)
+        os.system("ffmpeg -i written2.ogg finale.wav")
         r=sr.Recognizer()
-        income = r.recognize_google("new_file.wav")
-        print(income)
+        spoken=sr.AudioFile('finale.wav')
+        with spoken as source:
+            audio=r.record(source)
+        text=r.recognize_google(audio)
+        print(text)
+        os.system("del finale.wav")
         
 
 class q3(Resource):
@@ -56,8 +65,14 @@ class q3(Resource):
         final_file=open("written.ogg","wb")
         final_file.write(base64.b64decode(audio))
         final_file.close()
-        data, samplerate = sf.read('written.ogg')
-        sf.write('new_file.wav', data, samplerate)
+        os.system("ffmpeg -i written2.ogg finale.wav")
+        r=sr.Recognizer()
+        spoken=sr.AudioFile('finale.wav')
+        with spoken as source:
+            audio=r.record(source)
+        text=r.recognize_google(audio)
+        print(text)
+        os.system("del finale.wav")
 
 api.add_resource(q1,"/v1/api/q1")
 api.add_resource(q2,"/v1/api/q2")
