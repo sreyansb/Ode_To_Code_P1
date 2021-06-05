@@ -1,5 +1,6 @@
 from flask import Flask, request, Response
 import requests
+from pydub import AudioSegment
 import json
 from flask_restful import Resource,Api
 import base64
@@ -16,6 +17,10 @@ api=Api(app)
 
 class q1(Resource):
     def post(self):
+        try:
+            os.remove("finale.wav")
+        except:
+            pass
         msg=request.get_json()
         try:
             question_key=msg["question_key"]
@@ -29,7 +34,11 @@ class q1(Resource):
         final_file=open("written.ogg","wb")
         final_file.write(base64.b64decode(audio))
         final_file.close()
-        os.system("ffmpeg -i written2.ogg finale.wav")
+        # print("here")
+        # os.system("ffmpeg -i written.ogg finale.wav")
+        # print("there")
+        sound=AudioSegment.from_ogg("written.ogg")
+        sound.export("finale.wav",format="wav")
         r=sr.Recognizer()
         spoken=sr.AudioFile('finale.wav')
         with spoken as source:
@@ -112,6 +121,8 @@ class q1(Resource):
             return Response(json.dumps(ans),status=200,mimetype="application/json")
             
         if question_key=="q3":
+            text=text.strip("my birthday is on")
+            text=text.strip("my date of birth is")
             text=text.split()
             s=""
             index=0
@@ -145,7 +156,7 @@ class q1(Resource):
 
 api.add_resource(q1,"/v1/api")
 
-if __name__=="__main":
+if __name__=="__main__":
     app.run(debug=True)
 
 

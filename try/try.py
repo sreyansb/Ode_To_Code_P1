@@ -176,7 +176,7 @@ else:
     ans={"answers":[allowed[-1]]}
 print(text,array,s,json.dumps(ans))
 '''
-
+'''
 import json
 #text="23rd december 1998".lower()
 #text="22 10 1998".lower()
@@ -211,3 +211,12 @@ else:
     date=text[2]
 ans={"answer":[date+"/"+month+"/"+year]}
 print(json.dumps(ans))
+'''
+'''
+import ffmpeg
+stream=ffmpeg.input("no_health.ogg")
+ffmpeg.output(stream,"abc.wav")
+'''
+from pydub import AudioSegment
+sound = AudioSegment.from_ogg("no_health.ogg")
+sound.export("ainvayi.wav", format="wav")
