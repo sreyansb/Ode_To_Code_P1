@@ -32,13 +32,14 @@ class q1(Resource):
             audio=msg["audio"]
         except:
             return Response({},status=400,mimetype="application/json")
-        final_file=open("written.ogg","wb")
+        #print("DONE")
+        final_file=open("written1.ogg","wb")
         final_file.write(base64.b64decode(audio))
         final_file.close()
         # print("here")
         # os.system("ffmpeg -i written.ogg finale.wav")
         # print("there")
-        sound=AudioSegment.from_ogg("written.ogg")
+        sound=AudioSegment.from_ogg("written1.ogg")
         sound.export("finale.wav",format="wav")
         r=sr.Recognizer()
         spoken=sr.AudioFile('finale.wav')
@@ -136,8 +137,10 @@ class q1(Resource):
             
         if question_key=="q3":
             text=text.strip("my birthday is on")
+            text=text.strip("I was born on")
             text=text.strip("my date of birth is")
             text=text.split()
+            print(text)
             s=""
             index=0
             while(index<len(text[0]) and text[0][index].isdigit()):
