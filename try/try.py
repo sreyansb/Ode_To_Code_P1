@@ -50,7 +50,7 @@ print("After Regex:",chunker)
 output = chunker.parse(tokens_tag)
 print("After Chunking",output)
 '''
-
+'''
 import nltk
 text = "I was born is 4th December 1995"
 tokens = nltk.word_tokenize(text)
@@ -62,7 +62,7 @@ cp  =nltk.RegexpParser(grammar)
 result = cp.parse(tag)
 print(result)
 #result.draw()
-
+'''
 
 '''
 import scispacy

@@ -31,7 +31,7 @@ class q1(Resource):
                 options[optionstemp[i].lower()]=optionstemp[i]
             audio=msg["audio"]
         except:
-            return Response({},status=400,mimetype="application/json")#the order doesnt match the requirements given to us
+            return Response({},statfindus=400,mimetype="application/json")#the order doesnt match the requirements given to us
         #print("DONE")
         final_file=open("written1.ogg","wb")
         final_file.write(base64.b64decode(audio))#to write base64 to the server
@@ -56,7 +56,7 @@ class q1(Resource):
             all_diseases=list(doc.ents)
             for i in range(len(all_diseases)):
                 all_diseases[i]=str(all_diseases[i])
-            print(all_diseases)
+            #print(all_diseases)
             ans={"answers":[]}
             if len(all_diseases)==0 or (len(all_diseases)==1 and (all_diseases[0] in {"disease","fit","no disease","sick","not sick"})):
                 
@@ -71,7 +71,14 @@ class q1(Resource):
                     return Response(json.dumps(ans),status=200,mimetype="application/json")
                 else:
                     return Response(json.dumps(ans),status=200,mimetype="application/json")
+            
+            j=[i.split() for i in all_diseases]
+            #print(j)
+            all_diseases=[]
+            for i in j:
+                all_diseases=all_diseases+i
 
+            print(all_diseases)
             ansk=set()
             for i in all_diseases:
                 k=i
