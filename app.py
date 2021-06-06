@@ -31,16 +31,16 @@ class q1(Resource):
                 options[optionstemp[i].lower()]=optionstemp[i]
             audio=msg["audio"]
         except:
-            return Response({},status=400,mimetype="application/json")
+            return Response({},status=400,mimetype="application/json")#the order doesnt match the requirements given to us
         #print("DONE")
         final_file=open("written1.ogg","wb")
-        final_file.write(base64.b64decode(audio))
+        final_file.write(base64.b64decode(audio))#to write base64 to the server
         final_file.close()
         # print("here")
         # os.system("ffmpeg -i written.ogg finale.wav")
         # print("there")
         sound=AudioSegment.from_ogg("written1.ogg")
-        sound.export("finale.wav",format="wav")
+        sound.export("finale.wav",format="wav")#export it as a WAV file got google
         r=sr.Recognizer()
         spoken=sr.AudioFile('finale.wav')
         with spoken as source:
@@ -48,9 +48,11 @@ class q1(Resource):
         text=r.recognize_google(audio)
         
         if question_key=="q1":
+
+            #using scispacy's model get all the diseases possible
+
             text=text.lower()
             doc = nlp(text)
-            #print(text)
             all_diseases=list(doc.ents)
             for i in range(len(all_diseases)):
                 all_diseases[i]=str(all_diseases[i])
@@ -137,11 +139,8 @@ class q1(Resource):
             return Response(json.dumps(ans),status=200,mimetype="application/json")
             
         if question_key=="q3":
-            #print(text)
             tokens = nltk.word_tokenize(text)
-            #print(type(tokens),type(tokens[0]))
             tag = nltk.pos_tag(tokens)
-            #print(tag)
             allowed={"january":"01","jan":"01","february":"02","feb":"02","march":"03","april":"04",\
                     "may":"05","june":"06","july":"07","august":"08","aug":"08","september":"09","sept":"09",\
                         "oct":"10","october":"10","november":"11","december":"12","dec":"12"}
@@ -189,28 +188,7 @@ class q1(Resource):
                         month=allowed[i[0].lower()]
                     elif i[1]=="NN" and i[0].lower() in allowed:
                         month=allowed[i[0].lower()]
-            
-            # s=""
-            # index=0
-            # while(index<len(text[0]) and text[0][index].isdigit()):
-            #     s=s+text[0][index]
-            #     index+=1
-            # date,year,month=0,0,0
-            # if len(s)<4:
-            #     date=s
 
-            #     if len(s)<2:
-            #         date="0"+date
-                
-            #     if text[1] in allowed:
-            #         month=allowed[text[1]]
-            #     else:
-            #         month=text[1]
-            #     year=text[2]
-            # else:
-            #     year=text[0]
-            #     month=text[1]
-            #     date=text[2]
             ans={"answer":[date+"/"+month+"/"+year]}
             return Response(json.dumps(ans),status=200,mimetype="application/json")
         
