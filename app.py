@@ -46,9 +46,9 @@ class q1(Resource):
         with spoken as source:
             audio=r.record(source)
         text=r.recognize_google(audio)
-        text=text.lower()
-
+        
         if question_key=="q1":
+            text=text.lower()
             doc = nlp(text)
             #print(text)
             all_diseases=list(doc.ents)
@@ -89,6 +89,7 @@ class q1(Resource):
             return Response(json.dumps(ans),status=200,mimetype="application/json")
             
         if question_key=="q2":
+            text=text.lower()
             array=[]
             allowed=[]
             n=0
@@ -136,36 +137,80 @@ class q1(Resource):
             return Response(json.dumps(ans),status=200,mimetype="application/json")
             
         if question_key=="q3":
-            text=text.strip("my birthday is on")
-            text=text.strip("I was born on")
-            text=text.strip("my date of birth is")
-            text=text.split()
-            print(text)
-            s=""
-            index=0
-            while(index<len(text[0]) and text[0][index].isdigit()):
-                s=s+text[0][index]
-                index+=1
-            date,year,month=0,0,0
-            if len(s)<4:
-                date=s
-
-                if len(s)<2:
-                    date="0"+date
-
-                allowed={"january":"01","jan":"01","february":"02","feb":"02","march":"03","april":"04",\
+            #print(text)
+            tokens = nltk.word_tokenize(text)
+            #print(type(tokens),type(tokens[0]))
+            tag = nltk.pos_tag(tokens)
+            #print(tag)
+            allowed={"january":"01","jan":"01","february":"02","feb":"02","march":"03","april":"04",\
                     "may":"05","june":"06","july":"07","august":"08","aug":"08","september":"09","sept":"09",\
                         "oct":"10","october":"10","november":"11","december":"12","dec":"12"}
-                
-                if text[1] in allowed:
-                    month=allowed[text[1]]
+            date,month,year="0","0","0"
+            count=0
+            final=[]
+            for i in tag:
+                if i[1]=="CD":
+                    count+=1
+                    final.append(i[0])
+
+            if count==3:
+                month=final[1]
+                if len(final[0])==4 and final[0].isdigit():
+                    year=final[0]
+                    date=""
+                    for i in final[2]:
+                        if i.isdigit():
+                            date+=i
+                        else:
+                            break
                 else:
-                    month=text[1]
-                year=text[2]
+                    date=""
+                    for i in final[0]:
+                        if i.isdigit():
+                            date+=i
+                        else:
+                            break
+                    year=final[2]
+                    
             else:
-                year=text[0]
-                month=text[1]
-                date=text[2]
+                for i in tag:
+                    if i[1]=="CD":
+                        if i[0].isdigit() and len(i[0])==4:
+                            year=i[0]
+                        else:
+                            s=""
+                            index=0
+                            while(index<len(i[0]) and i[0][index].isdigit()):
+                                s=s+i[0][index]
+                                index+=1
+                            date=s
+                            date="0"*(max(0,2-len(date)))+date
+                    elif i[1]=="NNP":
+                        month=allowed[i[0].lower()]
+                    elif i[1]=="NN" and i[0].lower() in allowed:
+                        month=allowed[i[0].lower()]
+            
+            # s=""
+            # index=0
+            # while(index<len(text[0]) and text[0][index].isdigit()):
+            #     s=s+text[0][index]
+            #     index+=1
+            # date,year,month=0,0,0
+            # if len(s)<4:
+            #     date=s
+
+            #     if len(s)<2:
+            #         date="0"+date
+                
+            #     if text[1] in allowed:
+            #         month=allowed[text[1]]
+            #     else:
+            #         month=text[1]
+            #     year=text[2]
+            # else:
+            #     year=text[0]
+            #     month=text[1]
+            #     date=text[2]
             ans={"answer":[date+"/"+month+"/"+year]}
             return Response(json.dumps(ans),status=200,mimetype="application/json")
         

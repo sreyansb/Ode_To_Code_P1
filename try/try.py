@@ -56,7 +56,7 @@ text = "I was born is 4th December 1995"
 tokens = nltk.word_tokenize(text)
 print(type(tokens),type(tokens[0]))
 tag = nltk.pos_tag(tokens)
-print(type(tag),type(tag[0][0]),tag[0][1]=="CD")
+print(tag)
 grammar = "NP: {<DT>?<JJ>*<NN>}"
 cp  =nltk.RegexpParser(grammar)
 result = cp.parse(tag)
